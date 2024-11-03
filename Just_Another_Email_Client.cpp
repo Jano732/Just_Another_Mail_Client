@@ -15,7 +15,7 @@ using namespace std;
 
 int main()
 {
-    email NowaWiadomosc("k.poniatowska@autograf.pl", /*YOUR EMAIL*/, "Dobry Wieczor ę", "Nie wierzę że to działa!!!!");
+    email NowaWiadomosc(/*SOMEONES EMAIL*/, /*YOUR EMAIL*/, "Dobry Wieczor ę", "Nie wierzę że to działa!!!!");
     emailSender es(NowaWiadomosc, /*PASSWORD*/);
     //std::cout << NowaWiadomosc.getSender();
     es.sendEmail();
