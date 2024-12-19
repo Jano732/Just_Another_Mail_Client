@@ -22,6 +22,11 @@ bool toBool(std::string s)
     else return true;
 }
 
+emailSender::emailSender(email& e) : newMailData_(e)
+{
+
+}
+
 emailSender::emailSender(email& e, const char* paswd) : newMailData_(e), password_(paswd)
 {
     currentDateTime();
@@ -65,9 +70,11 @@ void emailSender::sendEmail()
         curl_easy_setopt(handle, CURLOPT_USERNAME, newMailData_.getSender());
         curl_easy_setopt(handle, CURLOPT_PASSWORD, getPassword());
         curl_easy_setopt(handle, CURLOPT_URL, "smtps://smtp.poczta.onet.pl:465");
+        curl_easy_setopt(handle, CURLOPT_SSL_VERIFYPEER, 0L);
+        curl_easy_setopt(handle, CURLOPT_SSL_VERIFYHOST, 0L);
         curl_easy_setopt(handle, CURLOPT_USE_SSL, (long)CURLUSESSL_ALL);
         curl_easy_setopt(handle, CURLOPT_MAIL_FROM, newMailData_.getSender());
-        recipients_ = curl_slist_append(recipients_, "<k.poniatowska@autograf.pl>");
+        //recipients_ = curl_slist_append(recipients_, "<k.poniatowska@autograf.pl>");
         curl_easy_setopt(handle, CURLOPT_MAIL_RCPT, recipients_);
         curl_easy_setopt(handle, CURLOPT_READFUNCTION, read_callback);
         curl_easy_setopt(handle, CURLOPT_READDATA, &upload_ctx);
@@ -75,7 +82,7 @@ void emailSender::sendEmail()
 
         result = curl_easy_perform(handle);
 
-        if (result != CURLE_OK) std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(result);
+        if (result != CURLE_OK) std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(result) << "\n";
 
         curl_slist_free_all(recipients_);
         curl_easy_cleanup(handle);
@@ -120,12 +127,17 @@ void emailSender::setFormatedDateTime(const char* fDateTime)
     emailSender::formatedDateTime_ = fDateTime;
 }
 
+void emailSender::setPassword(const char* pswd)
+{
+    password_ = pswd;
+}
+
 const char* emailSender::getFormatedDateTime()
 {
     return formatedDateTime_;
 }
 
-const char* emailSender::getPassword()
-{
-    return password_;
-}
+// const char* emailSender::getPassword()
+// {
+//     return password_;
+// }

@@ -24,8 +24,10 @@ class emailSender
 	const char* formatedDateTime_;
 	struct curl_slist* recipients_ = NULL;
 	static std::vector<std::string> payloadMessage_;
+    const char* getPassword() {return password_;};
 public:
-	
+
+    emailSender(email&);
 	emailSender(email&, const char*);
 	static const char* payload_message[];
 
@@ -36,9 +38,10 @@ public:
 	void addingRecipiens(const char*);
 
 	void setFormatedDateTime(const char*);
-	
+    void setPassword(const char*);
+
 	const char* getFormatedDateTime();
-	const char* getPassword();
+    // const char* getPassword();
 	
 };
 

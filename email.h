@@ -16,6 +16,7 @@ private:
 	const char* m_body;
 public:
 
+    email();
 	email(const char*, const char*, const char*, const char*);
 
 	void setSender(const char*);

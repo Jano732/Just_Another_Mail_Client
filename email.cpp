@@ -12,6 +12,14 @@
 //#include <windows.h>
 
 
+email::email()
+{
+    m_reciever = " ";
+    m_sender = " ";
+    m_title = " ";
+    m_body = " ";
+}
+
 email::email(const char* to, const char* from, const char* title, const char* body)
 {
 	m_reciever = to;
