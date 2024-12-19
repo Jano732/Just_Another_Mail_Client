@@ -9,7 +9,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <algorithm>
-#include <windows.h>
+//#include <windows.h>
 
 
 email::email(const char* to, const char* from, const char* title, const char* body)

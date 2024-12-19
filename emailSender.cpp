@@ -1,16 +1,16 @@
+#include "QtCore/qmetatype.h"
 #define NOMINMAX
 #define CRT_SECURE_NO_WARNINGS
 
 #include "email.h"
 #include "emailSender.h"
-
+#include <QDateTime>
 #include <iostream>
 #include <stdio.h>
 #include <curl/curl.h>
 #include <string.h>
 #include <stdlib.h>
-#include <algorithm>
-#include <windows.h>
+//#include <windows.h>
 #include <vector>
 
 
@@ -101,10 +101,11 @@ void emailSender::fillingPayloadMessage()
 void emailSender::currentDateTime()
 {
     char formattedDateTime[50];
-    time_t now = time(nullptr);
-    struct tm timeInfo;
-    localtime_s(&timeInfo, &now);
-    strftime(formattedDateTime, sizeof(formattedDateTime), "%a, %d %b %Y %H:%M:%S %z", &timeInfo);
+    QDateTime now = QDateTime::currentDateTime();
+    QString mimeDate = now.toString("ddd, dd MMM yyyy HH:mm:ss t");
+    mimeDate.replace("GMT", "+0000");
+    QByteArray byteArray = mimeDate.toLocal8Bit();
+    strcpy(formattedDateTime, byteArray.data());
 
     setFormatedDateTime(formattedDateTime);
 }
