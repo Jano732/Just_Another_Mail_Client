@@ -1,47 +1,51 @@
 #pragma once
 #include "email.h"
-#include "emailSender.h"
-#include <iostream>
 #include <stdio.h>
 #include <curl/curl.h>
-#include <string.h>
 #include <stdlib.h>
-#include <algorithm>
-//#include <windows.h>
+#include <string>
 #include <vector>
 
-bool toBool(std::string);
+bool toBool(const std::string&);
 
-struct uploadStatus
+struct UploadStatus
 {
 	int counter = 0;
 };
 
-class emailSender
+
+class EmailSender
 {
-	email& newMailData_;
-	const char* password_;
-	const char* formatedDateTime_;
-	struct curl_slist* recipients_ = NULL;
-	static std::vector<std::string> payloadMessage_;
-    const char* getPassword() {return password_;};
+    Email m_newMailData;
+    QString m_password;
+    QString m_login;
+    QString m_url;
+    std::vector<QString> m_payloadMessage;
+    UploadStatus m_uploadStatus;
+
 public:
 
-    emailSender(email&);
-	emailSender(email&, const char*);
-	static const char* payload_message[];
+    struct curl_slist* m_recipients = nullptr;
+    EmailSender();
+    EmailSender(Email);
+    EmailSender(Email, const char*);
+    const char* payload_message;
 
-	static size_t read_callback(char*, size_t, size_t, void*);
-	void sendEmail();
+    static size_t read_callback_instance(char*, size_t, size_t, void*);
+    size_t read_callback(char*, size_t, size_t);
+    bool sendEmail();
 	void fillingPayloadMessage();
-	void currentDateTime();
-	void addingRecipiens(const char*);
+    void addingRecipiens(QString);
+    void removeAllRecipiens();
+    const char* convertingData(QString) const;
 
-	void setFormatedDateTime(const char*);
-    void setPassword(const char*);
+    void setPassword(QString);
+    void setLogin(QString);
+    void setUrl(QString);
 
-	const char* getFormatedDateTime();
-    // const char* getPassword();
-	
+    QString getP();
+    QString getUrl();
+    QString getLogin();
+
 };
 

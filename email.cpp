@@ -1,18 +1,6 @@
-#define NOMINMAX
-#define CRT_SECURE_NO_WARNINGS
-
 #include "email.h"
-#include "emailSender.h"
-#include <iostream>
-#include <stdio.h>
-#include <curl/curl.h>
-#include <string.h>
-#include <stdlib.h>
-#include <algorithm>
-//#include <windows.h>
 
-
-email::email()
+Email::Email()
 {
     m_reciever = " ";
     m_sender = " ";
@@ -20,21 +8,21 @@ email::email()
     m_body = " ";
 }
 
-email::email(const char* to, const char* from, const char* title, const char* body)
+Email::Email(QString title, QString body)
 {
-	m_reciever = to;
-	m_sender = from;
+    m_reciever = "";
+    m_sender = "";
 	m_title = title;
 	m_body = body;
 }
 
-void email::setSender(const char* sender) { m_sender = sender; }
-void email::setReciever(const char* reciever) { m_reciever = reciever; }
-void email::setTitle(const char* title) { m_title = title; }
-void email::setBody(const char* body) { m_body = body; }
+void Email::setSender(QString sender) { m_sender = sender; }
+void Email::setReciever(QString reciever) { m_reciever = reciever; }
+void Email::setTitle(QString title) { m_title = title; }
+void Email::setBody(QString body) { m_body = body; }
 
-const char* email::getReciever() { return m_reciever; }
-const char* email::getSender() { return m_sender; }
-const char* email::getTitle() { return m_title; }
-const char* email::getBody() { return m_body; }
+QString Email::getReciever() const { return m_reciever; }
+QString Email::getSender() const { return m_sender; }
+QString Email::getTitle() const { return m_title; }
+QString Email::getBody() const { return m_body; }
 

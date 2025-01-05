@@ -1,143 +1,174 @@
 #include "QtCore/qmetatype.h"
+#include "qdebug.h"
 #define NOMINMAX
 #define CRT_SECURE_NO_WARNINGS
 
 #include "email.h"
 #include "emailSender.h"
-#include <QDateTime>
 #include <iostream>
-#include <stdio.h>
 #include <curl/curl.h>
 #include <string.h>
 #include <stdlib.h>
-//#include <windows.h>
 #include <vector>
 
 
-std::vector<std::string> emailSender::payloadMessage_;
+//std::vector<std::string> EmailSender::payloadMessage_;
 
-bool toBool(std::string s)
+bool toBool(const std::string& s)
 {
-    if (s.empty()) return false;
-    else return true;
+    return !s.empty();
 }
 
-emailSender::emailSender(email& e) : newMailData_(e)
-{
+EmailSender::EmailSender() {}
 
+EmailSender::EmailSender(Email e) : m_newMailData(e)
+{
+    //fillingPayloadMessage();
 }
 
-emailSender::emailSender(email& e, const char* paswd) : newMailData_(e), password_(paswd)
+EmailSender::EmailSender(Email e, const char* paswd) : m_newMailData(e), m_password(paswd)
 {
-    currentDateTime();
     fillingPayloadMessage();
 }
 
-size_t emailSender::read_callback(char* buffer, size_t size, size_t numOfbytes, void* userdata)
+size_t EmailSender::read_callback_instance(char* buffer, size_t size, size_t numOfbytes, void* userdata)
 {
-    uploadStatus* upload_message = (uploadStatus*)userdata;
-    std::string data;
-
-    if ((size == 0) || (numOfbytes == 0) || ((size * numOfbytes) < 1)) { return 0; }
-
-    if (upload_message->counter >= payloadMessage_.size()) { return 0; }
-  
-    data = payloadMessage_[upload_message->counter];
-
-    bool isEmpty = toBool(data);
-    if (isEmpty) {
-        size_t len = data.size();
-        memcpy(buffer, data.c_str(), len);
-        upload_message->counter++;
-
-        return len;
-    }
-    return 0;
+    EmailSender *self = static_cast<EmailSender*>(userdata);
+    return self->read_callback(buffer, size, numOfbytes);
 }
 
+size_t EmailSender::read_callback(char* buffer, size_t size, size_t numOfbytes)
+{
+    if ((size == 0) || (numOfbytes == 0) || ((size * numOfbytes) < 1)) { return 0; }
 
-void emailSender::sendEmail()
+    //UploadStatus* upload_message = static_cast<UploadStatus*>(userdata);
+
+    if (m_uploadStatus.counter >= m_payloadMessage.size()) { return 0; }
+
+    auto data = m_payloadMessage[m_uploadStatus.counter];
+
+    size_t len = data.size();
+    memcpy(buffer, convertingData(data), len); // ZNALEŹĆ ZAMIENNIK DLA MEMCPY
+    m_uploadStatus.counter++;
+    return len;
+}
+
+bool EmailSender::sendEmail()
 {
     CURL* handle;
     CURLcode result = CURLE_OK;
-    struct uploadStatus upload_ctx;
+    struct UploadStatus upload_ctx;
     upload_ctx.counter = 0;
-
     handle = curl_easy_init();
 
     if (handle) {
 
-        curl_easy_setopt(handle, CURLOPT_USERNAME, newMailData_.getSender());
-        curl_easy_setopt(handle, CURLOPT_PASSWORD, getPassword());
+        curl_easy_setopt(handle, CURLOPT_VERBOSE, 1L);
+        curl_easy_setopt(handle, CURLOPT_CAINFO, "D:\\Projekty\\JAMC_QMAKE\\build\\Desktop_Qt_6_8_0_MinGW_64_bit-Debug\\cacert-2024-11-26 (1).pem");
         curl_easy_setopt(handle, CURLOPT_URL, "smtps://smtp.poczta.onet.pl:465");
-        curl_easy_setopt(handle, CURLOPT_SSL_VERIFYPEER, 0L);
-        curl_easy_setopt(handle, CURLOPT_SSL_VERIFYHOST, 0L);
+        curl_easy_setopt(handle, CURLOPT_LOGIN_OPTIONS, "AUTH=LOGIN");
+        curl_easy_setopt(handle, CURLOPT_USERNAME, convertingData(m_login));
+        curl_easy_setopt(handle, CURLOPT_PASSWORD, convertingData(m_password));
+        curl_easy_setopt(handle, CURLOPT_MAIL_FROM, convertingData(m_newMailData.getSender()));
+        curl_easy_setopt(handle, CURLOPT_HTTPHEADER, "Content-Type: text/html; charset=UTF-8");
+        curl_easy_setopt(handle, CURLOPT_MAIL_RCPT, m_recipients);
         curl_easy_setopt(handle, CURLOPT_USE_SSL, (long)CURLUSESSL_ALL);
-        curl_easy_setopt(handle, CURLOPT_MAIL_FROM, newMailData_.getSender());
-        //recipients_ = curl_slist_append(recipients_, "<k.poniatowska@autograf.pl>");
-        curl_easy_setopt(handle, CURLOPT_MAIL_RCPT, recipients_);
-        curl_easy_setopt(handle, CURLOPT_READFUNCTION, read_callback);
-        curl_easy_setopt(handle, CURLOPT_READDATA, &upload_ctx);
+        curl_easy_setopt(handle, CURLOPT_READFUNCTION, &EmailSender::read_callback_instance);
+        curl_easy_setopt(handle, CURLOPT_READDATA, this);
         curl_easy_setopt(handle, CURLOPT_UPLOAD, 1L);
 
         result = curl_easy_perform(handle);
 
-        if (result != CURLE_OK) std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(result) << "\n";
+        //curl_slist_free_all(m_recipients);
+        removeAllRecipiens();
 
-        curl_slist_free_all(recipients_);
         curl_easy_cleanup(handle);
+
+        m_newMailData.setSender("");
+        m_newMailData.setReciever("");
+        m_newMailData.setTitle("");
+        m_newMailData.setBody("");
+
+        if (result != CURLE_OK)
+        {
+            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(result) << "\n";
+            return false;
+        }
+        else return true;
     }
+    //obsluga bledu
 }
 
-void emailSender::fillingPayloadMessage()
+void EmailSender::fillingPayloadMessage()
 {
-    std::vector<std::string> filledTemplate = {
-        "MIME-Version: 1.0"
-        "Date: " + (std::string)getFormatedDateTime() + "\r\n",
-        "To: <" + (std::string)newMailData_.getReciever() + ">\r\n",
-        "From: " + (std::string)newMailData_.getSender() + "\r\n",
+    std::vector<QString> filledTemplate = {
+        "To: <" + m_newMailData.getReciever() + ">\r\n",
+        "From: <" + m_newMailData.getSender() + ">\r\n",
+        "Subject: " + m_newMailData.getTitle() + "\r\n",
         "Content-Type: text/plain; charset=utf-8\r\n",
         "Message-ID: <dcd7cb36-11db-487a-9f3a-e652a9458efd@rfcpedant.example.org>\r\n",
-        "Subject: " + (std::string)newMailData_.getTitle() + "\r\n",
-        "\r\n" + (std::string)newMailData_.getBody() + "\r\n"
+        "MIME-Version: 1.0\r\n",
+        "\r\n",
+        m_newMailData.getBody() + "\r\n",
+        "\r\n"
     };
 
-    payloadMessage_ = filledTemplate;
+    for (const auto& line :filledTemplate) {
+        qDebug() << line << "\n";
+    }
+
+    m_payloadMessage = filledTemplate;
 }
 
-void emailSender::currentDateTime()
+
+
+const char* EmailSender::convertingData(QString s) const
 {
-    char formattedDateTime[50];
-    QDateTime now = QDateTime::currentDateTime();
-    QString mimeDate = now.toString("ddd, dd MMM yyyy HH:mm:ss t");
-    mimeDate.replace("GMT", "+0000");
-    QByteArray byteArray = mimeDate.toLocal8Bit();
-    strcpy(formattedDateTime, byteArray.data());
-
-    setFormatedDateTime(formattedDateTime);
+    return s.toUtf8();
 }
 
-void emailSender::addingRecipiens(const char* recipient)
+void EmailSender::addingRecipiens(QString recipient)
 {
-    curl_slist_append(recipients_, recipient);
+    m_recipients = curl_slist_append(m_recipients, convertingData(recipient));
 }
 
-void emailSender::setFormatedDateTime(const char* fDateTime) 
+void EmailSender::removeAllRecipiens()
 {
-    emailSender::formatedDateTime_ = fDateTime;
+     if(m_recipients != nullptr) curl_slist_free_all(m_recipients);
 }
 
-void emailSender::setPassword(const char* pswd)
+void EmailSender::setPassword(QString pswd)
 {
-    password_ = pswd;
+   m_password = pswd;
 }
 
-const char* emailSender::getFormatedDateTime()
+void EmailSender::setUrl(QString u)
 {
-    return formatedDateTime_;
+    m_url = u;
 }
 
-// const char* emailSender::getPassword()
-// {
-//     return password_;
-// }
+QString EmailSender::getP()
+{
+    return m_password;
+}
+
+QString EmailSender::getUrl()
+{
+    return m_url;
+}
+
+QString EmailSender::getLogin()
+{
+    return m_login;
+}
+
+void EmailSender::setLogin(QString s)
+{
+    m_login = s;
+}
+
+
+
+
+
+

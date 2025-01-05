@@ -6,101 +6,91 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>451</height>
+    <width>282</width>
+    <height>345</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="btn_sndEmail">
+   <widget class="QCheckBox" name="checkBox_test">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>340</y>
-      <width>201</width>
-      <height>61</height>
+      <x>780</x>
+      <y>0</y>
+      <width>78</width>
+      <height>22</height>
      </rect>
     </property>
     <property name="text">
-     <string>SEND EMAIL</string>
+     <string/>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QPushButton" name="pushButton_login">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>150</y>
-      <width>201</width>
-      <height>81</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <item>
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Recipient:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="le_recipient"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btn_AddRcp">
-       <property name="text">
-        <string>Add Recipient</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QListWidget" name="lstWid_listOfRecipients">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>240</y>
-      <width>201</width>
-      <height>91</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QWidget" name="">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>20</y>
-      <width>201</width>
+      <x>10</x>
+      <y>200</y>
+      <width>261</width>
       <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>LOGIN</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_errorInfo">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>260</y>
+      <width>261</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::Box</enum>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>261</width>
+      <height>48</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QLabel" name="label">
-       <property name="frameShape">
-        <enum>QFrame::Shape::NoFrame</enum>
-       </property>
        <property name="text">
-        <string>your e-mail:</string>
+        <string>Login:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_email"/>
+      <widget class="QLineEdit" name="lineEdit_login"/>
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>80</y>
-      <width>201</width>
-      <height>51</height>
+      <x>10</x>
+      <y>60</y>
+      <width>261</width>
+      <height>48</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout_3">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
       <widget class="QLabel" name="label_2">
        <property name="text">
@@ -109,7 +99,10 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_pasword">
+      <widget class="QLineEdit" name="lineEdit_password">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="echoMode">
         <enum>QLineEdit::EchoMode::Password</enum>
        </property>
@@ -117,47 +110,32 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>240</x>
-      <y>20</y>
-      <width>541</width>
-      <height>51</height>
+      <x>10</x>
+      <y>110</y>
+      <width>261</width>
+      <height>78</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout_5">
+    <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
-      <widget class="QLabel" name="label_5">
+      <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>Title:</string>
+        <string>Smtp server URL:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_title"/>
+      <widget class="QComboBox" name="comboBox_urls"/>
      </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="">
-    <property name="geometry">
-     <rect>
-      <x>240</x>
-      <y>80</y>
-      <width>541</width>
-      <height>321</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout_4">
      <item>
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Body:</string>
+      <widget class="QLineEdit" name="lineEdit_customURL">
+       <property name="placeholderText">
+        <string>Input custom URL</string>
        </property>
       </widget>
-     </item>
-     <item>
-      <widget class="QTextEdit" name="textEdit_body"/>
      </item>
     </layout>
    </widget>
@@ -167,7 +145,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>282</width>
      <height>21</height>
     </rect>
    </property>
