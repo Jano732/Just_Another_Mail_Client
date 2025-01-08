@@ -20,11 +20,11 @@ class EmailSender
     QString m_password;
     QString m_login;
     QString m_url;
-    std::vector<QString> m_payloadMessage;
     UploadStatus m_uploadStatus;
 
 public:
 
+    std::vector<QString> m_payloadMessage;
     struct curl_slist* m_recipients = nullptr;
     EmailSender();
     EmailSender(Email);
@@ -37,15 +37,17 @@ public:
 	void fillingPayloadMessage();
     void addingRecipiens(QString);
     void removeAllRecipiens();
+    //QString errorDirect(const char*);
     const char* convertingData(QString) const;
 
     void setPassword(QString);
     void setLogin(QString);
     void setUrl(QString);
+    void setNewMailData(Email);
 
-    QString getP();
     QString getUrl();
     QString getLogin();
+    QString getP();
 
 };
 

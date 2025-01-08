@@ -65,6 +65,9 @@ public:
         label_errorInfo->setObjectName("label_errorInfo");
         label_errorInfo->setGeometry(QRect(10, 260, 261, 41));
         label_errorInfo->setFrameShape(QFrame::Shape::Box);
+        label_errorInfo->setTextFormat(Qt::TextFormat::AutoText);
+        label_errorInfo->setScaledContents(true);
+        label_errorInfo->setAlignment(Qt::AlignmentFlag::AlignCenter);
         layoutWidget = new QWidget(centralwidget);
         layoutWidget->setObjectName("layoutWidget");
         layoutWidget->setGeometry(QRect(10, 10, 261, 48));

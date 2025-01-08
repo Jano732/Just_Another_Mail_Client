@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     m_eSender = EmailSender();
+
     ui->lineEdit_customURL->setDisabled(true);
 
     ui->comboBox_urls->addItem("onet.pl");
@@ -30,8 +31,11 @@ void MainWindow::on_pushButton_login_clicked()
     QString newLogin = ui->lineEdit_login->text();
     QString newPassword = ui->lineEdit_password->text();
 
-    bool r = true;
-    //bool r = verify_email(newLogin, newPassword);
+    m_eSender.setLogin(newLogin);
+    m_eSender.setPassword(newPassword);
+
+    //bool r = true;
+    bool r = verify_email();
     if(r)
     {
         this->hide();
@@ -42,28 +46,32 @@ void MainWindow::on_pushButton_login_clicked()
     }
 }
 
-bool MainWindow::verify_email(QString l, QString p)
+bool MainWindow::verify_email()
 {
-    Email e;
-    e.setBody("BODY");
-    e.setTitle("TITLE");
-    e.setReciever("TEST RECIEVER");
-    e.setSender("TEST SENDER");
-
-    EmailSender es(e);
-    es.setPassword(p);
-    es.setLogin(l);
-    es.addingRecipiens("TEST EMAIL");
-    es.fillingPayloadMessage();
-
-    bool res = es.sendEmail();
+    try{
+    Email e("TITLE", "BODY", "TEST ADDRESS");
+    m_eSender.addingRecipiens("TEST ADDRESS");
+    m_eSender.setNewMailData(e);
+    m_eSender.fillingPayloadMessage();
+    bool res = m_eSender.sendEmail();
     return res;
+    }
+    catch (std::exception &ex)
+    {
+        ui->label_errorInfo->setText(ex.what());
+        return false;
+    }
+    catch (std::invalid_argument &ex)
+    {
+        ui->label_errorInfo->setText(ex.what());
+        return false;
+    }
 }
 
 void MainWindow::on_comboBox_urls_activated(int index)
 {
     switch(index) {
-    case 0: m_eSender.setUrl("smtps:smtp.poczta.onet.pl:465");
+    case 0: m_eSender.setUrl("smtps://smtp.poczta.onet.pl:465");
         break;
     case 1: m_eSender.setUrl("smtps://smtp.gmail.com:465");
         break;
@@ -84,6 +92,7 @@ void MainWindow::on_lineEdit_customURL_textChanged(const QString &arg1)
 {
     m_eSender.setUrl(arg1);
 }
+
 
 
 

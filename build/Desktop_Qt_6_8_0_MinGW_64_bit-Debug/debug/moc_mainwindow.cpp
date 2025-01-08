@@ -64,13 +64,13 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
        1,    0,   38,    2, 0x08,    1 /* Private */,
-       3,    2,   39,    2, 0x08,    2 /* Private */,
-       4,    1,   44,    2, 0x08,    5 /* Private */,
-       6,    1,   47,    2, 0x08,    7 /* Private */,
+       3,    0,   39,    2, 0x08,    2 /* Private */,
+       4,    1,   40,    2, 0x08,    3 /* Private */,
+       6,    1,   43,    2, 0x08,    5 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
-    QMetaType::Bool, QMetaType::QString, QMetaType::QString,    2,    2,
+    QMetaType::Bool,
     QMetaType::Void, QMetaType::Int,    5,
     QMetaType::Void, QMetaType::QString,    7,
 
@@ -90,8 +90,6 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'verify_email'
         QtPrivate::TypeAndForceComplete<bool, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
         // method 'on_comboBox_urls_activated'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
@@ -109,7 +107,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         (void)_t;
         switch (_id) {
         case 0: _t->on_pushButton_login_clicked(); break;
-        case 1: { bool _r = _t->verify_email((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2])));
+        case 1: { bool _r = _t->verify_email();
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
         case 2: _t->on_comboBox_urls_activated((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
         case 3: _t->on_lineEdit_customURL_textChanged((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;

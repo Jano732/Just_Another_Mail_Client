@@ -5,7 +5,6 @@
 
 #include "email.h"
 #include "emailSender.h"
-#include <iostream>
 #include <curl/curl.h>
 #include <string.h>
 #include <stdlib.h>
@@ -23,7 +22,7 @@ EmailSender::EmailSender() {}
 
 EmailSender::EmailSender(Email e) : m_newMailData(e)
 {
-    //fillingPayloadMessage();
+
 }
 
 EmailSender::EmailSender(Email e, const char* paswd) : m_newMailData(e), m_password(paswd)
@@ -50,6 +49,9 @@ size_t EmailSender::read_callback(char* buffer, size_t size, size_t numOfbytes)
     size_t len = data.size();
     memcpy(buffer, convertingData(data), len); // ZNALEŹĆ ZAMIENNIK DLA MEMCPY
     m_uploadStatus.counter++;
+
+    qDebug() << len;
+
     return len;
 }
 
@@ -57,19 +59,21 @@ bool EmailSender::sendEmail()
 {
     CURL* handle;
     CURLcode result = CURLE_OK;
-    struct UploadStatus upload_ctx;
-    upload_ctx.counter = 0;
+    //struct UploadStatus upload_ctx;
+    m_uploadStatus.counter = 0;
     handle = curl_easy_init();
+
+    qDebug() << m_url;
 
     if (handle) {
 
         curl_easy_setopt(handle, CURLOPT_VERBOSE, 1L);
         curl_easy_setopt(handle, CURLOPT_CAINFO, "D:\\Projekty\\JAMC_QMAKE\\build\\Desktop_Qt_6_8_0_MinGW_64_bit-Debug\\cacert-2024-11-26 (1).pem");
-        curl_easy_setopt(handle, CURLOPT_URL, "smtps://smtp.poczta.onet.pl:465");
+        curl_easy_setopt(handle, CURLOPT_URL, convertingData(m_url));
         curl_easy_setopt(handle, CURLOPT_LOGIN_OPTIONS, "AUTH=LOGIN");
         curl_easy_setopt(handle, CURLOPT_USERNAME, convertingData(m_login));
         curl_easy_setopt(handle, CURLOPT_PASSWORD, convertingData(m_password));
-        curl_easy_setopt(handle, CURLOPT_MAIL_FROM, convertingData(m_newMailData.getSender()));
+        curl_easy_setopt(handle, CURLOPT_MAIL_FROM, convertingData(m_login));
         curl_easy_setopt(handle, CURLOPT_HTTPHEADER, "Content-Type: text/html; charset=UTF-8");
         curl_easy_setopt(handle, CURLOPT_MAIL_RCPT, m_recipients);
         curl_easy_setopt(handle, CURLOPT_USE_SSL, (long)CURLUSESSL_ALL);
@@ -78,32 +82,31 @@ bool EmailSender::sendEmail()
         curl_easy_setopt(handle, CURLOPT_UPLOAD, 1L);
 
         result = curl_easy_perform(handle);
-
-        //curl_slist_free_all(m_recipients);
         removeAllRecipiens();
-
         curl_easy_cleanup(handle);
 
-        m_newMailData.setSender("");
         m_newMailData.setReciever("");
         m_newMailData.setTitle("");
         m_newMailData.setBody("");
+        m_newMailData.setReciever("");
+
 
         if (result != CURLE_OK)
         {
-            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(result) << "\n";
+            throw std::runtime_error(curl_easy_strerror(result));
             return false;
         }
         else return true;
     }
-    //obsluga bledu
+    else throw std::invalid_argument("CURL pointer error");
+
 }
 
 void EmailSender::fillingPayloadMessage()
 {
     std::vector<QString> filledTemplate = {
-        "To: <" + m_newMailData.getReciever() + ">\r\n",
-        "From: <" + m_newMailData.getSender() + ">\r\n",
+        "To: <" + m_newMailData.getRecievers() + ">\r\n",
+        "From: <" + m_login + ">\r\n",
         "Subject: " + m_newMailData.getTitle() + "\r\n",
         "Content-Type: text/plain; charset=utf-8\r\n",
         "Message-ID: <dcd7cb36-11db-487a-9f3a-e652a9458efd@rfcpedant.example.org>\r\n",
@@ -113,17 +116,18 @@ void EmailSender::fillingPayloadMessage()
         "\r\n"
     };
 
-    for (const auto& line :filledTemplate) {
-        qDebug() << line << "\n";
-    }
+    // for (const auto& line :filledTemplate) {
+    //     qDebug() << line << "\n";
+    // }
 
     m_payloadMessage = filledTemplate;
 }
 
 
-
 const char* EmailSender::convertingData(QString s) const
 {
+    // QByteArray utf8Data = s.toUtf8();
+    // return utf8Data.constData();
     return s.toUtf8();
 }
 
@@ -134,8 +138,13 @@ void EmailSender::addingRecipiens(QString recipient)
 
 void EmailSender::removeAllRecipiens()
 {
-     if(m_recipients != nullptr) curl_slist_free_all(m_recipients);
+    if(m_recipients != nullptr)
+    {
+        curl_slist_free_all(m_recipients);
+        m_recipients = nullptr;
+    }
 }
+
 
 void EmailSender::setPassword(QString pswd)
 {
@@ -147,9 +156,9 @@ void EmailSender::setUrl(QString u)
     m_url = u;
 }
 
-QString EmailSender::getP()
+void EmailSender::setNewMailData(Email e)
 {
-    return m_password;
+    m_newMailData = e;
 }
 
 QString EmailSender::getUrl()
@@ -166,6 +175,12 @@ void EmailSender::setLogin(QString s)
 {
     m_login = s;
 }
+
+QString EmailSender::getP()
+{
+    return m_password;
+}
+
 
 
 

@@ -3,22 +3,19 @@
 
 class Email
 {
-    QString m_reciever = "";
-    QString m_sender = "";
+    QString m_recievers = "";
     QString m_title = "";
     QString m_body = "";
 public:
 
     Email();
-    Email(QString, QString);
+    Email(QString, QString, QString);
 
-    void setSender(QString);
     void setReciever(QString);
     void setTitle(QString);
     void setBody(QString);
 
-    QString getReciever() const;
-    QString getSender()  const;
+    QString getRecievers() const;
     QString getTitle()  const;
     QString getBody() const;
 

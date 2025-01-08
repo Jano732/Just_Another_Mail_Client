@@ -2,27 +2,23 @@
 
 Email::Email()
 {
-    m_reciever = " ";
-    m_sender = " ";
+    m_recievers = " ";
     m_title = " ";
     m_body = " ";
 }
 
-Email::Email(QString title, QString body)
+Email::Email(QString title, QString body, QString recievers)
 {
-    m_reciever = "";
-    m_sender = "";
-	m_title = title;
-	m_body = body;
+    m_title = title;
+    m_body = body;
+    m_recievers = recievers;
 }
 
-void Email::setSender(QString sender) { m_sender = sender; }
-void Email::setReciever(QString reciever) { m_reciever = reciever; }
+void Email::setReciever(QString reciever) { m_recievers = reciever; }
 void Email::setTitle(QString title) { m_title = title; }
 void Email::setBody(QString body) { m_body = body; }
 
-QString Email::getReciever() const { return m_reciever; }
-QString Email::getSender() const { return m_sender; }
+QString Email::getRecievers() const { return m_recievers; }
 QString Email::getTitle() const { return m_title; }
 QString Email::getBody() const { return m_body; }
 

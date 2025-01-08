@@ -20,16 +20,18 @@ public:
     ~MainWindow();
     void reset();
 
+
 private slots:
     //void on_btn_AddRcp_clicked();
 
     void on_pushButton_login_clicked();
 
-    bool verify_email(QString, QString);
+    bool verify_email();
 
     void on_comboBox_urls_activated(int index);
 
     void on_lineEdit_customURL_textChanged(const QString &arg1);
+
 
 private:
     Ui::MainWindow *ui;

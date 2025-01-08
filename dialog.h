@@ -29,7 +29,7 @@ private slots:
 private:
     Ui::Dialog *ui;
     EmailSender m_eSender;
-    QString m_recievers;
+    QString m_recipients;
 };
 
 #endif // DIALOG_H
